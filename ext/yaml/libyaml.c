@@ -12,19 +12,16 @@ VALUE LibYAML_load(VALUE self, VALUE rstr) {
 }
 
 VALUE LibYAML_load_file(VALUE self, VALUE file) {
-  rb_raise(rb_eNotImpError, "not implemented!!");
   NOT_IMPLEMENTED /* TODO */
   return file;
 }
 
 VALUE LibYAML_load_stream(VALUE self, VALUE io) {
-  rb_raise(rb_eNotImpError, "not implemented!!");
   NOT_IMPLEMENTED /* TODO */
   return io;
 }
 
 VALUE LibYAML_dump(VALUE self, VALUE robj, VALUE io) {
-  rb_raise(rb_eNotImpError, "not implemented!!");
   NOT_IMPLEMENTED /* TODO */
   return robj;
 }
