@@ -12,33 +12,12 @@ VALUE rb_libyaml_load(VALUE self, VALUE rstr) {
   return rstr;
 }
 
-VALUE yaml_event2rubyobj(yaml_event_t event) {
-  VALUE obj;
-
-  switch ( event.type ) {
-    case YAML_SCALAR_EVENT:
-      obj = rb_str_new2((char *)event.data.scalar.value);
-      break;
-    case YAML_SEQUENCE_START_EVENT:
-      obj = rb_ary_new();
-      break;
-    case YAML_MAPPING_START_EVENT:
-      obj = rb_hash_new();
-      break;
-    default:
-      obj = Qnil;
-      break;
-  }
-
-  return obj;
-}
-
 VALUE rb_libyaml_load_file(VALUE self, VALUE file_str) {
   FILE *file;
   yaml_parser_t parser;
   yaml_event_t event;
   int done = 0;
-  VALUE ary, obj;
+  VALUE ary, obj, stack, tmp_ary;
   
   assert(yaml_parser_initialize(&parser));
   file = fopen(RSTRING_PTR(file_str), "rb");
@@ -46,12 +25,39 @@ VALUE rb_libyaml_load_file(VALUE self, VALUE file_str) {
   yaml_parser_set_input_file(&parser, file);
 
   ary = rb_ary_new();
+  obj     = (VALUE)NULL;
+  stack = rb_ary_new();
+
   while ( !done ) {
     yaml_parser_parse(&parser, &event);
     done = ( event.type == YAML_STREAM_END_EVENT );
 
-    obj = yaml_event2rubyobj(event);
-    rb_ary_push(ary, obj);
+    switch( event.type ) {
+      case YAML_SCALAR_EVENT:
+        obj = rb_str_new2((char *)event.data.scalar.value);
+
+        if ( RARRAY_LEN(stack) ) {
+          rb_ary_push(rb_ary_entry(stack, RARRAY_LEN(stack) - 1), obj);
+        } else {
+          rb_ary_push(ary, obj);
+        }
+        break;
+      case YAML_SEQUENCE_START_EVENT:
+        obj = rb_ary_new();
+        rb_ary_push(stack, obj);
+        break;
+      case YAML_SEQUENCE_END_EVENT:
+        tmp_ary = rb_ary_pop(stack);
+        if ( RARRAY_LEN(stack) ) {
+          rb_ary_push(rb_ary_entry(stack, RARRAY_LEN(stack) - 1), tmp_ary);
+        } else {
+          rb_ary_push(ary, tmp_ary);
+        }
+        break;
+      default:
+        obj = Qnil;
+        break;
+    }
 
     yaml_event_delete(&event);
   }
