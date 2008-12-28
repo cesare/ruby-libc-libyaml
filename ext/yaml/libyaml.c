@@ -12,6 +12,10 @@ VALUE rb_libyaml_load(VALUE self, VALUE rstr) {
   return rstr;
 }
 
+VALUE ary_last(VALUE ary) {
+  return rb_ary_entry(ary, RARRAY_LEN(ary) - 1);
+}
+
 VALUE rb_libyaml_load_file(VALUE self, VALUE file_str) {
   FILE *file;
   yaml_parser_t parser;
@@ -36,7 +40,7 @@ VALUE rb_libyaml_load_file(VALUE self, VALUE file_str) {
         obj = rb_str_new2((char *)event.data.scalar.value);
 
         assert(RARRAY_LEN(stack));
-        rb_ary_push(rb_ary_entry(stack, RARRAY_LEN(stack) - 1), obj);
+        rb_ary_push(ary_last(stack), obj);
         break;
       case YAML_SEQUENCE_START_EVENT:
         obj = rb_ary_new();
@@ -45,7 +49,7 @@ VALUE rb_libyaml_load_file(VALUE self, VALUE file_str) {
       case YAML_SEQUENCE_END_EVENT:
         tmp_ary = rb_ary_pop(stack);
         assert(RARRAY_LEN(stack));
-        rb_ary_push(rb_ary_entry(stack, RARRAY_LEN(stack) - 1), tmp_ary);
+        rb_ary_push(ary_last(stack), tmp_ary);
         break;
       default:
         obj = Qnil;
@@ -57,7 +61,7 @@ VALUE rb_libyaml_load_file(VALUE self, VALUE file_str) {
 
   yaml_parser_delete(&parser);
   assert(!fclose(file));
-  return rb_ary_entry(stack, RARRAY_LEN(stack) - 1);
+  return ary_last(stack);
 }
 
 VALUE rb_libyaml_load_stream(VALUE self, VALUE io) {
