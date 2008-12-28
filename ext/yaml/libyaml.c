@@ -21,7 +21,7 @@ VALUE rb_libyaml_load_file(VALUE self, VALUE file_str) {
   yaml_parser_t parser;
   yaml_event_t event;
   int done = 0;
-  VALUE obj, stack, tmp_ary;
+  VALUE obj, stack, tmp_obj;
   
   assert(yaml_parser_initialize(&parser));
   file = fopen(RSTRING_PTR(file_str), "rb");
@@ -39,17 +39,50 @@ VALUE rb_libyaml_load_file(VALUE self, VALUE file_str) {
       case YAML_SCALAR_EVENT:
         obj = rb_str_new2((char *)event.data.scalar.value);
 
-        assert(RARRAY_LEN(stack));
-        rb_ary_push(ary_last(stack), obj);
+        tmp_obj = ary_last(stack);
+        switch ( TYPE(tmp_obj) ) {
+          case T_ARRAY:
+            rb_ary_push(tmp_obj, obj);
+            break;
+          case T_HASH:
+            rb_ary_push(stack, obj);
+            break;
+          case T_STRING:
+            tmp_obj = rb_ary_pop(stack);
+            rb_hash_aset(ary_last(stack), tmp_obj, obj);
+            obj = (VALUE)NULL;
+
+            break;
+          default:
+            break;
+        }
+        tmp_obj = (VALUE)NULL;
         break;
       case YAML_SEQUENCE_START_EVENT:
         obj = rb_ary_new();
         rb_ary_push(stack, obj);
         break;
+      case YAML_MAPPING_START_EVENT:
+        obj = rb_hash_new();
+        rb_ary_push(stack, obj);
+        break;
       case YAML_SEQUENCE_END_EVENT:
-        tmp_ary = rb_ary_pop(stack);
-        assert(RARRAY_LEN(stack));
-        rb_ary_push(ary_last(stack), tmp_ary);
+      case YAML_MAPPING_END_EVENT:
+        tmp_obj = rb_ary_pop(stack);
+        switch ( TYPE( ary_last(stack) ) ) {
+          case T_ARRAY:
+            rb_ary_push(ary_last(stack), tmp_obj);
+            break;
+          case T_HASH:
+            rb_ary_push(stack, tmp_obj);
+            break;
+          case T_STRING:
+            obj = rb_ary_pop(stack);
+            assert(TYPE(ary_last(stack)) == T_HASH);
+            rb_hash_aset(ary_last(stack), obj, tmp_obj);
+            break;
+        }
+        tmp_obj = (VALUE)NULL;
         break;
       default:
         obj = Qnil;
@@ -61,7 +94,7 @@ VALUE rb_libyaml_load_file(VALUE self, VALUE file_str) {
 
   yaml_parser_delete(&parser);
   assert(!fclose(file));
-  return ary_last(stack);
+  return ary_last(ary_last(stack));
 }
 
 VALUE rb_libyaml_load_stream(VALUE self, VALUE io) {
