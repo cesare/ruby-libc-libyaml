@@ -54,9 +54,10 @@ begin
   Spec::Rake::SpecTask.new do |t|
     t.spec_files = FileList['spec/**/*_spec.rb']
     t.warning = false
-    t.rcov = true
     t.spec_opts = []
-    t.rcov_opts = [ '--exclude', 'spec' ]
+    # *.rb file is not exist. so skipping rcov task.
+    # t.rcov = true
+    # t.rcov_opts = [ '--exclude', 'spec' ]
   end
 rescue LoadError => e
   warn "skipping :spec task. if you run this task, please install rspec."
