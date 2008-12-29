@@ -6,4 +6,4 @@ rescue LoadError
   require 'spec'
 end
 
-require File.join(File.dirname(__FILE__), '..', 'lib', 'libyaml')
+require File.join(File.dirname(__FILE__), '..', 'lib', 'yaml', 'libyaml')
