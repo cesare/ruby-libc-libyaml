@@ -7,11 +7,6 @@
 static VALUE mYAML;
 static VALUE mLibYAML;
 
-VALUE rb_libyaml_load(VALUE self, VALUE rstr) {
-  NOT_IMPLEMENTED /* TODO */
-  return rstr;
-}
-
 VALUE ary_last(VALUE ary) {
   return rb_ary_entry(ary, RARRAY_LEN(ary) - 1);
 }
@@ -77,6 +72,10 @@ VALUE do_parse(yaml_parser_t *p_parser) {
         }
         tmp_obj = (VALUE)NULL;
         break;
+      case YAML_NO_EVENT:
+        /* TODO: it fall into loop. it may be better raise some Exception. */
+        return Qnil;
+        break;
       default:
         obj = Qnil;
         break;
@@ -87,6 +86,15 @@ VALUE do_parse(yaml_parser_t *p_parser) {
 
   yaml_parser_delete(p_parser);
   return ary_last(ary_last(stack));
+}
+
+VALUE rb_libyaml_load(VALUE self, VALUE rstr) {
+  yaml_parser_t parser;
+
+  assert(yaml_parser_initialize(&parser));
+
+  yaml_parser_set_input_string(&parser, (unsigned char *)RSTRING_PTR(rstr), RSTRING_LEN(rstr));
+  return do_parse(&parser);
 }
 
 VALUE rb_libyaml_load_file(VALUE self, VALUE file_str) {
