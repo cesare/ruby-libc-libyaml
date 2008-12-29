@@ -2,17 +2,15 @@
 
 require 'rubygems'
 require 'rake'
+require 'pathname'
 require 'rake/clean'
 require 'rake/packagetask'
 require 'rake/gempackagetask'
 require 'rake/rdoctask'
-require 'rake/testtask'
-require 'spec/rake/spectask'
 
 dir = File.dirname(__FILE__)
 $LOAD_PATH.unshift(File.join(dir, "lib"))
 
-require 'yaml/libyaml'
 require 'yaml/libyaml/version'
 
 spec = Gem::Specification.new do |s|
@@ -24,7 +22,7 @@ spec = Gem::Specification.new do |s|
   s.summary          = 'Ruby binding module of libyaml library'
   s.homepage         = '' # TODO set later
 
-  files = FileList["{doc,ext,lib,spec}/**/*"].exclude("doc/rdoc").to_a
+  files = FileList["{doc,ext,lib,spec}/**/*"].exclude("doc/rdoc").exclude('**/*.{bundle,o,so}').to_a
   files |= ['Rakefile', 'LICENSE']
   s.files            = files
   s.extensions       = ['ext/yaml/extconf.rb']
@@ -37,11 +35,13 @@ end
 
 if $0 == __FILE__
   Gem::Builder.new(spec).build
+  exit
 end
 
-
-task :default => ['clean', 'clobber', 'spec', 'rdoc', 'package']
-
+desc 'run spec.'
+task :default => %w( spec)
+task :spec    => %w( compile )
+task :package => %w( clean clobber rdoc )
 
 Rake::GemPackageTask.new(spec) do |pkg|
   pkg.need_tar_gz  = true
@@ -49,13 +49,29 @@ Rake::GemPackageTask.new(spec) do |pkg|
   pkg.need_zip     = true
 end
 
+begin
+  require 'spec/rake/spectask'
+  Spec::Rake::SpecTask.new do |t|
+    t.spec_files = FileList['spec/**/*_spec.rb']
+    t.warning = false
+    t.rcov = true
+    t.spec_opts = []
+    t.rcov_opts = [ '--exclude', 'spec' ]
+  end
+rescue LoadError => e
+  warn "skipping :spec task. if you run this task, please install rspec."
+end
 
-Spec::Rake::SpecTask.new do |t|
-  t.spec_files = FileList['spec/**/*_spec.rb']
-  t.warning = false
-  t.rcov = true
-  t.spec_opts = []
-  t.rcov_opts = [ '--exclude', 'spec' ]
+desc 'compile ext library'
+task :compile do
+  Dir.chdir('ext/yaml/') do
+    ruby "extconf.rb"
+    sh "make"
+  end
+
+  Pathname('ext/yaml/').children.select {|f| f.executable? }.each do |file|
+    cp file, 'lib/yaml/'
+  end
 end
 
 Rake::RDocTask.new('rdoc') do |t|
