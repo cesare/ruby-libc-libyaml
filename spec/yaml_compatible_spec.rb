@@ -1,7 +1,14 @@
 require File.join(File.dirname(__FILE__), 'spec_helper')
 
 begin
-  require 'spec/fixture'
+  begin
+    require 'spec/fixture'
+  rescue LoadError => e
+    require 'rubygems'
+    gem 'rspec-fixture'
+    require 'spec/fixture'
+  end
+
   require 'yaml'
 
   describe YAML::LibYAML do
