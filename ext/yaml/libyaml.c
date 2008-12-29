@@ -16,23 +16,16 @@ VALUE ary_last(VALUE ary) {
   return rb_ary_entry(ary, RARRAY_LEN(ary) - 1);
 }
 
-VALUE rb_libyaml_load_file(VALUE self, VALUE file_str) {
-  FILE *file;
-  yaml_parser_t parser;
+VALUE do_parse(yaml_parser_t *p_parser) {
   yaml_event_t event;
   int done = 0;
   VALUE obj, stack, tmp_obj;
-  
-  assert(yaml_parser_initialize(&parser));
-  file = fopen(RSTRING_PTR(file_str), "rb");
-  assert(file);
-  yaml_parser_set_input_file(&parser, file);
 
   obj     = (VALUE)NULL;
   stack = rb_ary_new3(1, rb_ary_new());
 
   while ( !done ) {
-    yaml_parser_parse(&parser, &event);
+    yaml_parser_parse(p_parser, &event);
     done = ( event.type == YAML_STREAM_END_EVENT );
 
     switch( event.type ) {
@@ -92,9 +85,24 @@ VALUE rb_libyaml_load_file(VALUE self, VALUE file_str) {
     yaml_event_delete(&event);
   }
 
-  yaml_parser_delete(&parser);
-  assert(!fclose(file));
+  yaml_parser_delete(p_parser);
   return ary_last(ary_last(stack));
+}
+
+VALUE rb_libyaml_load_file(VALUE self, VALUE file_str) {
+  FILE *file;
+  VALUE obj;
+  yaml_parser_t parser;
+
+  assert(yaml_parser_initialize(&parser));
+  file = fopen(RSTRING_PTR(file_str), "rb");
+  assert(file);
+  yaml_parser_set_input_file(&parser, file);
+
+  obj = do_parse(&parser);
+  assert(!fclose(file));
+
+  return obj;
 }
 
 VALUE rb_libyaml_load_stream(VALUE self, VALUE io) {
