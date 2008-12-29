@@ -51,6 +51,7 @@ end
 
 
 Spec::Rake::SpecTask.new do |t|
+  t.spec_files = FileList['spec/**/*_spec.rb']
   t.warning = false
   t.rcov = true
   t.spec_opts = []
