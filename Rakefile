@@ -16,11 +16,14 @@ require 'yaml/libyaml/version'
 spec = Gem::Specification.new do |s|
   s.name             = 'yaml-libyaml'
   s.version          = YAML::LibYAML::Version.to_version
-  s.author           = 'SAWADA Tadashi'
-  s.email            = 'moc.liamg.cesare@gmail.com'
+  s.authors          = [
+    'Keiji, Yoshimi',
+    'SAWADA Tadashi',
+  ]
+  s.email            = 'ruby-libc-libyaml@googlegroups.com'
   s.platform         = Gem::Platform::RUBY
   s.summary          = 'Ruby binding module of libyaml library'
-  s.homepage         = '' # TODO set later
+  s.homepage         = 'http://groups.google.co.jp/group/ruby-libc-libyaml'
 
   files = FileList["{doc,ext,lib,spec}/**/*"].exclude("doc/rdoc").exclude('**/*.{bundle,o,so}').to_a
   files |= ['Rakefile', 'LICENSE']
