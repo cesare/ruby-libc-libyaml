@@ -13,32 +13,43 @@ begin
 
   describe YAML::LibYAML do
     describe ".load" do
-      with_fixtures :yaml => :option do
-
-        it "should be compatible to YAML (:msg)" do |yaml,option|
+      with_fixtures :yaml => :message do
+        it "should be compatible to YAML (:message)" do |yaml,message|
           YAML::LibYAML.load(yaml).should == YAML.load(yaml)
         end
 
-        # FIXME: hmm. are there any cool way to manage simple?
-        set_fixtures([
-          [ { <<-END_YAML => nil } , "simple mapping" ],
+        test_data = <<-EOF_TEST_DATA
+=== simple mapping
 ---
 key: val
-          END_YAML
-          [ { <<-END_YAML => nil } , "simple sequense" ],
+
+=== simple sequense
 ---
 - foo
 - bar
 - baz
-          END_YAML
-          [ { <<-END_YAML => nil } , "seq in map" ],
+
+=== seq in map
 ---
 global:
   - foo
   - bar
   - baz
-          END_YAML
-        ])
+        EOF_TEST_DATA
+
+
+        # making fixture data
+        data = test_data.split(/^(===.+)$\n/)
+        data.shift # remove garbage
+
+        fixtures = []
+        while message = data.shift
+          message.gsub!(/^===\s+/, '')
+          yaml = data.shift
+          fixtures << [ { yaml => message }, message ]
+        end
+
+        set_fixtures(fixtures)
       end
     end
   end
