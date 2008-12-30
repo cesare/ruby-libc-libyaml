@@ -58,7 +58,7 @@ begin
   Spec::Rake::SpecTask.new do |t|
     t.spec_files = FileList['spec/**/*_spec.rb']
     t.warning = false
-    t.spec_opts = []
+    t.spec_opts = [ '--options', 'spec/spec.opts' ]
     # *.rb file is not exist. so skipping rcov task.
     # t.rcov = true
     # t.rcov_opts = [ '--exclude', 'spec' ]
