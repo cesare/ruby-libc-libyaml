@@ -42,6 +42,7 @@ desc 'run spec.'
 task :default => %w( spec)
 task :spec    => %w( compile )
 task :package => %w( clean clobber rdoc )
+task :clean => %w( compile_clean )
 
 Rake::GemPackageTask.new(spec) do |pkg|
   pkg.need_tar_gz  = true
@@ -63,15 +64,35 @@ rescue LoadError => e
   warn "skipping :spec task. if you run this task, please install rspec."
 end
 
-desc 'compile ext library'
-task :compile do
+file 'ext/yaml/Makefile' do
   Dir.chdir('ext/yaml/') do
     ruby "extconf.rb"
+  end
+end
+
+desc 'compile ext library'
+task :compile => ['ext/yaml/Makefile'] do
+  Dir.chdir('ext/yaml/') do
     sh "make"
   end
 
   Pathname('ext/yaml/').children.select {|f| f.executable? }.each do |file|
     cp file, 'lib/yaml/'
+  end
+end
+
+desc "remove compile files"
+task :compile_clean do
+  if File.exist?('ext/yaml/Makefile')
+    rm "ext/yaml/Makefile"
+  end
+  Pathname.glob("ext/**/*").select {|f| f.to_s !~ /\.(c|rb)$/ }.each do |f|
+    next if f.directory?
+    rm f
+  end
+  Pathname.glob("lib/**/*").select {|f| f.to_s !~ /\.(rb)$/ }.each do |f|
+    next if f.directory?
+    rm f
   end
 end
 
