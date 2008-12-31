@@ -17,6 +17,11 @@ VALUE do_parse(yaml_parser_t *p_parser) {
   VALUE obj, stack, tmp_obj;
   char * num_reg_char = "^(\\+|-)?([0-9][0-9\\._]+)$";
   VALUE num_regex = rb_reg_new(num_reg_char, strlen(num_reg_char), NULL);
+  char * hex_reg_char = "^0x[0-9a-fA-F]+";
+  VALUE hex_regex = rb_reg_new(hex_reg_char, strlen(hex_reg_char), NULL);
+
+  char * oct_reg_char = "^0[0-7]+$";
+  VALUE oct_regex = rb_reg_new(oct_reg_char, strlen(oct_reg_char), NULL);
 
   obj     = (VALUE)NULL;
   stack = rb_ary_new3(1, rb_ary_new());
@@ -31,6 +36,10 @@ VALUE do_parse(yaml_parser_t *p_parser) {
 
         if ( RSTRING_LEN(obj) == 1 && RSTRING_PTR(obj)[0] == '~' ) {
           obj = Qnil;
+        } else if ( rb_reg_match(oct_regex, obj) != Qnil ) {
+          obj = rb_str_to_inum(obj, 8, Qfalse);
+        } else if ( rb_reg_match(hex_regex, obj) != Qnil ) {
+          obj = rb_str_to_inum(obj, 16, Qfalse);
         } else if ( rb_reg_match(num_regex, obj) != Qnil ) {
           obj = rb_Float(obj);
         }
