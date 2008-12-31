@@ -27,6 +27,10 @@ VALUE do_parse(yaml_parser_t *p_parser) {
       case YAML_SCALAR_EVENT:
         obj = rb_str_new2((char *)event.data.scalar.value);
 
+        if ( RSTRING_LEN(obj) == 1 && RSTRING_PTR(obj)[0] == '~' ) {
+          obj = Qnil;
+        }
+
         tmp_obj = ary_last(stack);
         switch ( TYPE(tmp_obj) ) {
           case T_ARRAY:
@@ -35,13 +39,11 @@ VALUE do_parse(yaml_parser_t *p_parser) {
           case T_HASH:
             rb_ary_push(stack, obj);
             break;
-          case T_STRING:
+          default:
             tmp_obj = rb_ary_pop(stack);
             rb_hash_aset(ary_last(stack), tmp_obj, obj);
             obj = (VALUE)NULL;
 
-            break;
-          default:
             break;
         }
         tmp_obj = (VALUE)NULL;
@@ -64,7 +66,7 @@ VALUE do_parse(yaml_parser_t *p_parser) {
           case T_HASH:
             rb_ary_push(stack, tmp_obj);
             break;
-          case T_STRING:
+          default:
             obj = rb_ary_pop(stack);
             assert(TYPE(ary_last(stack)) == T_HASH);
             rb_hash_aset(ary_last(stack), obj, tmp_obj);
