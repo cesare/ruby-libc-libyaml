@@ -34,14 +34,19 @@ VALUE do_parse(yaml_parser_t *p_parser) {
       case YAML_SCALAR_EVENT:
         obj = rb_str_new2((char *)event.data.scalar.value);
 
-        if ( RSTRING_LEN(obj) == 1 && RSTRING_PTR(obj)[0] == '~' ) {
-          obj = Qnil;
-        } else if ( rb_reg_match(oct_regex, obj) != Qnil ) {
-          obj = rb_str_to_inum(obj, 8, Qfalse);
-        } else if ( rb_reg_match(hex_regex, obj) != Qnil ) {
-          obj = rb_str_to_inum(obj, 16, Qfalse);
-        } else if ( rb_reg_match(num_regex, obj) != Qnil ) {
-          obj = rb_Float(obj);
+        if (
+            event.data.scalar.style != YAML_SINGLE_QUOTED_SCALAR_STYLE &&
+            event.data.scalar.style != YAML_DOUBLE_QUOTED_SCALAR_STYLE
+        ) {
+          if ( RSTRING_LEN(obj) == 1 && RSTRING_PTR(obj)[0] == '~' ) {
+            obj = Qnil;
+          } else if ( rb_reg_match(oct_regex, obj) != Qnil ) {
+            obj = rb_str_to_inum(obj, 8, Qfalse);
+          } else if ( rb_reg_match(hex_regex, obj) != Qnil ) {
+            obj = rb_str_to_inum(obj, 16, Qfalse);
+          } else if ( rb_reg_match(num_regex, obj) != Qnil ) {
+            obj = rb_Float(obj);
+          }
         }
 
         tmp_obj = ary_last(stack);
