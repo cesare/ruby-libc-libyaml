@@ -89,7 +89,7 @@ task :compile_clean do
   if File.exist?('ext/yaml/Makefile')
     rm "ext/yaml/Makefile"
   end
-  Pathname.glob("ext/**/*").select {|f| f.to_s !~ /\.(c|rb)$/ }.each do |f|
+  Pathname.glob("ext/**/*").select {|f| f.to_s !~ /\.(c|h|rb)$/ }.each do |f|
     next if f.directory?
     rm f
   end

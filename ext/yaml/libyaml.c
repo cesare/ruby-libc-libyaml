@@ -2,6 +2,8 @@
 #include <yaml.h>
 #include <assert.h>
 
+#include "libyaml.h"
+
 #define NOT_IMPLEMENTED rb_raise(rb_eNotImpError, "not implemented!!");
 
 static VALUE mYAML;
@@ -38,9 +40,11 @@ VALUE do_parse(yaml_parser_t *p_parser) {
             event.data.scalar.style != YAML_SINGLE_QUOTED_SCALAR_STYLE &&
             event.data.scalar.style != YAML_DOUBLE_QUOTED_SCALAR_STYLE
         ) {
-          if ( RSTRING_LEN(obj) == 1 && RSTRING_PTR(obj)[0] == '~' ) {
-            obj = Qnil;
-          } else if ( rb_reg_match(oct_regex, obj) != Qnil ) {
+          VALUE v = get_fixed_value_by_name(&event);
+          if (v != Qundef) {
+            obj = v;
+          }
+          else if ( rb_reg_match(oct_regex, obj) != Qnil ) {
             obj = rb_str_to_inum(obj, 8, Qfalse);
           } else if ( rb_reg_match(hex_regex, obj) != Qnil ) {
             obj = rb_str_to_inum(obj, 16, Qfalse);
