@@ -40,5 +40,15 @@ describe YAML::LibYAML do
       end
     end
 
+    {
+      '010' => 8,
+      '0x10' => 16,
+      '0x0f' => 15,
+      '10' => 10,
+    }.each do |input,expect|
+      it "should interpret '#{input}' as #{expect}" do
+        YAML::LibYAML.load(input).should == expect
+      end
+    end
   end
 end
