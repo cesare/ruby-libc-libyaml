@@ -58,6 +58,14 @@ VALUE get_fixed_value_by_name(yaml_event_t* event) {
   const char* ptr  = NULL;
   const char* head = NULL;
   
+  VALUE rbstr;
+  char * num_reg_char = "^(\\+|-)?([0-9][0-9\\._]+)$";
+  VALUE num_regex = rb_reg_new(num_reg_char, strlen(num_reg_char), NULL);
+  char * hex_reg_char = "^0x[0-9a-fA-F]+";
+  VALUE hex_regex = rb_reg_new(hex_reg_char, strlen(hex_reg_char), NULL);
+  char * oct_reg_char = "^0[0-7]+$";
+  VALUE oct_regex = rb_reg_new(oct_reg_char, strlen(oct_reg_char), NULL);
+
   if (str == NULL) {
     return Qundef;
   }
@@ -83,5 +91,16 @@ VALUE get_fixed_value_by_name(yaml_event_t* event) {
     return rb_float_new(*head == '-' ? NEGATIVE_INFINITY : POSITIVE_INFINITY);
   }
   
+  rbstr = rb_str_new2((char *)str);
+  if ( rb_reg_match(oct_regex, rbstr) != Qnil ) {
+    return rb_str_to_inum(rbstr, 8, Qfalse);
+  } else if ( rb_reg_match(hex_regex, rbstr) != Qnil ) {
+    return rb_str_to_inum(rbstr, 16, Qfalse);
+  } else if ( rb_reg_match(num_regex, rbstr) != Qnil ) {
+    return rb_Float(rbstr);
+  }
+
   return Qundef;
 }
+
+
