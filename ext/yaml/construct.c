@@ -91,7 +91,7 @@ VALUE get_fixed_value_by_name(yaml_event_t* event) {
     return rb_float_new(*head == '-' ? NEGATIVE_INFINITY : POSITIVE_INFINITY);
   }
   
-  rbstr = rb_str_new2((char *)str);
+  rbstr = rb_str_new2(str);
   if ( rb_reg_match(oct_regex, rbstr) != Qnil ) {
     return rb_str_to_inum(rbstr, 8, Qfalse);
   } else if ( rb_reg_match(hex_regex, rbstr) != Qnil ) {
