@@ -124,6 +124,9 @@ VALUE rb_libyaml_load_file(VALUE self, VALUE file_str) {
 
   assert(yaml_parser_initialize(&parser));
   file = fopen(RSTRING_PTR(file_str), "rb");
+  if ( !file ) {
+    rb_sys_fail(RSTRING_PTR(file_str));
+  }
   assert(file);
   yaml_parser_set_input_file(&parser, file);
 
