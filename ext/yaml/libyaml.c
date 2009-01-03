@@ -256,13 +256,13 @@ VALUE rb_libyaml_load_stream(VALUE self, VALUE rstr) {
   if (event.type == YAML_STREAM_START_EVENT){
     while(!done){
       yaml_parser_parse(&parser, &event);
-      if (event.type == YAML_DOCUMENT_START_EVENT){
-	tmp_obj = do_parse_for_stream(&parser);
-	if(tmp_obj){
-	  rb_ary_push(obj, tmp_obj);
-	}
-      }else if (event.type == YAML_STREAM_END_EVENT){
-	done = 1;
+      if (event.type == YAML_DOCUMENT_START_EVENT) {
+        tmp_obj = do_parse_for_stream(&parser);
+        if (tmp_obj) {
+          rb_ary_push(obj, tmp_obj);
+        }
+      } else if (event.type == YAML_STREAM_END_EVENT) {
+        done = 1;
       }
     }
   }
