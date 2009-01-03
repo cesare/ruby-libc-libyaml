@@ -263,6 +263,8 @@ VALUE rb_libyaml_load_stream(VALUE self, VALUE rstr) {
         }
       } else if (event.type == YAML_STREAM_END_EVENT) {
         done = 1;
+      } else {
+        assert(0); /* TODO */
       }
     }
   }
