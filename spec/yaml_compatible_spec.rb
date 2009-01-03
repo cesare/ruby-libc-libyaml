@@ -13,11 +13,11 @@ begin
 
   describe YAML::LibYAML do
     test_data = <<-EOF_TEST_DATA
-### TODO: scalar Fixnum
+### scalar Fixnum
 ---
 100
 
-### TODO: scalar Float
+### scalar Float
 ---
 10.1
 
