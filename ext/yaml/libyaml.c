@@ -214,29 +214,52 @@ VALUE do_parse_for_stream(yaml_parser_t *p_parser) {
 
 VALUE rb_libyaml_load(VALUE self, VALUE rstr) {
   yaml_parser_t parser;
-
-  assert(yaml_parser_initialize(&parser));
-
+  VALUE results;
+  
+  switch (TYPE(rstr)) {
+    case T_STRING:
+      break;
+    /* TODO enable to accept stream objects */
+    default:
+      rb_raise(rb_eTypeError, "1st argument must be an String");
+  }
+  
+  if (!yaml_parser_initialize(&parser)) {
+    RAISE_WITH_PARSER_INITIALIZE_FAILED;
+  }
+  
   yaml_parser_set_input_string(&parser, (unsigned char *)RSTRING_PTR(rstr), RSTRING_LEN(rstr));
-  return do_parse(&parser);
+  
+  results = do_parse(&parser);
+  
+  yaml_parser_delete(&parser);
+  return results;
 }
 
 VALUE rb_libyaml_load_file(VALUE self, VALUE file_str) {
   FILE *file;
   VALUE obj;
   yaml_parser_t parser;
-
-  assert(yaml_parser_initialize(&parser));
+  
+  /* parameter file_str must be a string object */
+  Check_Type(file_str, T_STRING);
+  
   file = fopen(RSTRING_PTR(file_str), "rb");
   if ( !file ) {
     rb_sys_fail(RSTRING_PTR(file_str));
   }
-  assert(file);
+
+  if (!yaml_parser_initialize(&parser)) {
+    fclose(file);
+    RAISE_WITH_PARSER_INITIALIZE_FAILED;
+  }
+  
   yaml_parser_set_input_file(&parser, file);
 
   obj = do_parse(&parser);
   assert(!fclose(file));
-
+  
+  yaml_parser_delete(&parser);
   return obj;
 }
 
@@ -248,7 +271,10 @@ VALUE rb_libyaml_load_stream(VALUE self, VALUE rstr) {
 
   obj = rb_ary_new();
 
-  assert(yaml_parser_initialize(&parser));
+  if (!yaml_parser_initialize(&parser)) {
+    RAISE_WITH_PARSER_INITIALIZE_FAILED;
+  }
+  
   yaml_parser_set_input_string(&parser, (unsigned char *)RSTRING_PTR(rstr), RSTRING_LEN(rstr));
 
   int done = 0;
@@ -268,6 +294,8 @@ VALUE rb_libyaml_load_stream(VALUE self, VALUE rstr) {
       }
     }
   }
+  
+  yaml_parser_delete(&parser);
   return obj;
 }
 
