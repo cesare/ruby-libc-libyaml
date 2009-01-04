@@ -17,7 +17,7 @@ VALUE do_parse(yaml_parser_t *p_parser) {
   yaml_event_t event;
   int done = 0;
   VALUE obj, stack, tmp_obj;
-  char * num_reg_char = "^(\\+|-)?([0-9][0-9\\._]+)$";
+  char * num_reg_char = "^(\\+|-)?([0-9][0-9\\._]*)$";
   VALUE num_regex = rb_reg_new(num_reg_char, strlen(num_reg_char), NULL);
   char * hex_reg_char = "^0x[0-9a-fA-F]+";
   VALUE hex_regex = rb_reg_new(hex_reg_char, strlen(hex_reg_char), NULL);
@@ -116,7 +116,7 @@ VALUE do_parse_for_stream(yaml_parser_t *p_parser) {
   yaml_event_t event;
   int done = 0;
   VALUE obj, stack, tmp_obj;
-  char * num_reg_char = "^(\\+|-)?([0-9][0-9\\._]+)$";
+  char * num_reg_char = "^(\\+|-)?([0-9][0-9\\._]*)$";
   VALUE num_regex = rb_reg_new(num_reg_char, strlen(num_reg_char), NULL);
   char * hex_reg_char = "^0x[0-9a-fA-F]+";
   VALUE hex_regex = rb_reg_new(hex_reg_char, strlen(hex_reg_char), NULL);
