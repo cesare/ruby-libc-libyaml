@@ -108,7 +108,6 @@ VALUE do_parse(yaml_parser_t *p_parser) {
     yaml_event_delete(&event);
   }
 
-  yaml_parser_delete(p_parser);
   return ary_last(ary_last(stack));
 }
 
@@ -208,7 +207,6 @@ VALUE do_parse_for_stream(yaml_parser_t *p_parser) {
     yaml_event_delete(&event);
   }
 
-  //yaml_parser_delete(p_parser);
   return ary_last(ary_last(stack));
 }
 
