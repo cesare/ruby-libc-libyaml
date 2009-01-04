@@ -20,4 +20,11 @@
 /*
  * function prototypes
  */
+FILE* get_iostream(VALUE io);
+VALUE ary_last(VALUE ary);
+
 VALUE get_fixed_value_by_name(yaml_event_t* event);
+
+VALUE do_parse(yaml_parser_t *p_parser);
+VALUE do_parse_for_stream(yaml_parser_t *p_parser);
+
