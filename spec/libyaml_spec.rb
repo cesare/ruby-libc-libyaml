@@ -56,5 +56,9 @@ describe YAML::LibYAML do
     it 'should parse strings passed as an argument, into Ruby objects' do
       YAML::LibYAML.load('123').should == 123
     end
+    
+    it 'should read stream and parse its contents into Ruby objects' do
+      open(get_pathname('minimum-valid-example.yaml')) { |io| YAML::LibYAML.load(io) }.should == 123
+    end
   end
 end

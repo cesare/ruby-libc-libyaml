@@ -1,4 +1,6 @@
 #include <ruby.h>
+#include <rubyio.h>
+
 #include <yaml.h>
 #include <assert.h>
 
@@ -210,23 +212,51 @@ VALUE do_parse_for_stream(yaml_parser_t *p_parser) {
   return ary_last(ary_last(stack));
 }
 
+FILE* get_iostream(VALUE io) {
+  struct RFile* rfile;
+  OpenFile* open_file;
+  FILE * file;
+  
+  rfile = RFILE(io);
+  if (rfile == NULL) {
+    return NULL;
+  }
+  
+  open_file = rfile->fptr;
+  if (open_file == NULL) {
+    return NULL;
+  }
+  
+  return GetReadFile(open_file);
+}
+
 VALUE rb_libyaml_load(VALUE self, VALUE rstr) {
   yaml_parser_t parser;
   VALUE results;
+  int object_type = TYPE(rstr);
   
-  switch (TYPE(rstr)) {
-    case T_STRING:
-      break;
-    /* TODO enable to accept stream objects */
-    default:
-      rb_raise(rb_eTypeError, "1st argument must be an String");
+  if (object_type != T_STRING && object_type != T_FILE) {
+    rb_raise(rb_eTypeError, "1st argument must be an String");
   }
   
   if (!yaml_parser_initialize(&parser)) {
     RAISE_WITH_PARSER_INITIALIZE_FAILED;
   }
   
-  yaml_parser_set_input_string(&parser, (unsigned char *)RSTRING_PTR(rstr), RSTRING_LEN(rstr));
+  switch (TYPE(rstr)) {
+    case T_STRING:
+      yaml_parser_set_input_string(&parser, (unsigned char *)RSTRING_PTR(rstr), RSTRING_LEN(rstr));
+      break;
+    case T_FILE: {
+      FILE* io = get_iostream(rstr);
+      if (io == NULL) {
+        yaml_parser_delete(&parser);
+        rb_raise(rb_eArgError, "Failed to get FILE object");
+      }
+      yaml_parser_set_input_file(&parser, io);
+      break;
+    }
+  }
   
   results = do_parse(&parser);
   
