@@ -11,6 +11,16 @@
 static VALUE mYAML;
 static VALUE mLibYAML;
 
+void Init_libyaml()
+{
+  mYAML = rb_define_module("YAML");
+  mLibYAML = rb_define_module_under(mYAML, "LibYAML");
+  rb_define_singleton_method(mLibYAML, "load", rb_libyaml_load, 1);
+  rb_define_singleton_method(mLibYAML, "load_file", rb_libyaml_load_file, 1);
+  rb_define_singleton_method(mLibYAML, "load_stream", rb_libyaml_load_stream, 1);
+  rb_define_singleton_method(mLibYAML, "dump", rb_libyaml_dump, 1);
+}
+
 VALUE rb_libyaml_load(VALUE self, VALUE rstr) {
   yaml_parser_t parser;
   VALUE results;
@@ -111,15 +121,5 @@ VALUE rb_libyaml_load_stream(VALUE self, VALUE rstr) {
 VALUE rb_libyaml_dump(VALUE self, VALUE robj, VALUE io) {
   NOT_IMPLEMENTED /* TODO */
   return robj;
-}
-
-void Init_libyaml()
-{
-  mYAML = rb_define_module("YAML");
-  mLibYAML = rb_define_module_under(mYAML, "LibYAML");
-  rb_define_singleton_method(mLibYAML, "load", rb_libyaml_load, 1);
-  rb_define_singleton_method(mLibYAML, "load_file", rb_libyaml_load_file, 1);
-  rb_define_singleton_method(mLibYAML, "load_stream", rb_libyaml_load_stream, 1);
-  rb_define_singleton_method(mLibYAML, "dump", rb_libyaml_dump, 1);
 }
 

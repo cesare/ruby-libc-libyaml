@@ -28,3 +28,9 @@ VALUE get_fixed_value_by_name(yaml_event_t* event);
 VALUE do_parse(yaml_parser_t *p_parser);
 VALUE do_parse_for_stream(yaml_parser_t *p_parser);
 
+VALUE rb_libyaml_load(VALUE self, VALUE rstr);
+VALUE rb_libyaml_load_file(VALUE self, VALUE file_str);
+VALUE rb_libyaml_load_stream(VALUE self, VALUE rstr);
+VALUE rb_libyaml_dump(VALUE self, VALUE robj, VALUE io);
+
+
