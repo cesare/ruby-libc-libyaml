@@ -49,7 +49,7 @@ describe YAML::LibYAML do
   end
   
   #
-  # This is minimum example, just to check if #load can parse valid YAML expressions.
+  # These are minimum examples, just to check if #load can parse valid YAML expressions.
   # See construct_spec.rb for parsing and construction details.
   #
   describe '#load' do

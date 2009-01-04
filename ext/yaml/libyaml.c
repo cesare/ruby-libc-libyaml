@@ -236,7 +236,7 @@ VALUE rb_libyaml_load(VALUE self, VALUE rstr) {
   int object_type = TYPE(rstr);
   
   if (object_type != T_STRING && object_type != T_FILE) {
-    rb_raise(rb_eTypeError, "1st argument must be an String");
+    rb_raise(rb_eTypeError, "1st argument must be String or IO instances");
   }
   
   if (!yaml_parser_initialize(&parser)) {
