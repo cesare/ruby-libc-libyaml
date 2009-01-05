@@ -69,7 +69,7 @@ end
 
 file 'ext/yaml/Makefile' do
   Dir.chdir('ext/yaml/') do
-    ruby "extconf.rb"
+    ruby ["extconf.rb", ENV["CONFIGURE_ARGS"]].join(" ")
   end
 end
 
