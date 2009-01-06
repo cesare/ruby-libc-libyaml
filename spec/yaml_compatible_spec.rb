@@ -1,18 +1,9 @@
 require File.join(File.dirname(__FILE__), 'spec_helper')
 
-begin
-  begin
-    require 'spec/fixture'
-  rescue LoadError => e
-    require 'rubygems'
-    gem 'rspec-fixture'
-    require 'spec/fixture'
-  end
+require 'yaml'
 
-  require 'yaml'
-
-  describe YAML::LibYAML do
-    test_data = <<-EOF_TEST_DATA
+describe YAML::LibYAML do
+  test_data = <<-EOF_TEST_DATA
 ### scalar Fixnum
 ---
 100
@@ -96,40 +87,29 @@ spaced: 2001-12-14 21:59:43.10 -5
 date: 2002-12-14
 
 EOF_TEST_DATA
-    describe '.load_stream' do
-      it 'should be compatible to YAML' do
-        YAML::LibYAML.load_stream(test_data).documents.should == YAML.load_stream(test_data).documents
-      end
-    end
 
-    describe ".load" do
-      with_fixtures :yaml => :message do
-        it "should be compatible to YAML (:message)" do |yaml,message|
-          if message =~ /anchor/
-            warn YAML.load(yaml)
-          end
-          YAML::LibYAML.load(yaml).should == YAML.load(yaml)
-        end
-
-        # making fixture data
-        data = test_data.split(/^(###.+)$\n/)
-        data.shift # remove garbage
-
-        fixtures = []
-        while message = data.shift
-          message.gsub!(/^###\s+/, '')
-          yaml = data.shift
-          fixtures << [ { yaml => message }, message ]
-        end
-
-        set_fixtures(fixtures)
-      end
+  describe '.load_stream' do
+    it 'should be compatible to YAML' do
+      violated "assertion failed"
+      YAML::LibYAML.load_stream(test_data).documents.should == YAML.load_stream(test_data).documents
     end
   end
-rescue LoadError => e
-  describe "rspec-fixture gem" do
-    it "should installed" do
-      violated "this spec require rspec-fixture."
+
+  describe ".load" do
+    # making fixture data
+    data = test_data.split(/^(###.+)$\n/)
+    data.shift # remove garbage
+
+    while message = data.shift
+      message.gsub!(/^###\s+/, '')
+      yaml = data.shift
+
+      class_eval <<-EOF_EVAL
+        it message do
+          YAML::LibYAML.load(#{yaml.inspect}).should == YAML.load(#{yaml.inspect})
+        end
+      EOF_EVAL
     end
   end
 end
+
