@@ -127,5 +127,9 @@ EOF_TEST_DATA
     end
   end
 rescue LoadError => e
-  warn "this spec require rspec-fixture."
+  describe "rspec-fixture gem" do
+    it "should installed" do
+      violated "this spec require rspec-fixture."
+    end
+  end
 end
