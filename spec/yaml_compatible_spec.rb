@@ -8,6 +8,14 @@ describe YAML::LibYAML do
 ---
 100
 
+### scalar Oct
+---
+010
+
+### scalar Hex
+---
+0x1f
+
 ### scalar Float
 ---
 10.1
@@ -105,7 +113,7 @@ EOF_TEST_DATA
       yaml = data.shift
 
       class_eval <<-EOF_EVAL
-        it message do
+        it "should be compatible to YAML ( #{message} )" do
           YAML::LibYAML.load(#{yaml.inspect}).should == YAML.load(#{yaml.inspect})
         end
       EOF_EVAL
