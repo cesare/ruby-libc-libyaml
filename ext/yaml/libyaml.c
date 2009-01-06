@@ -102,7 +102,7 @@ VALUE rb_libyaml_load_stream(VALUE self, VALUE rstr) {
     while(!done){
       yaml_parser_parse(&parser, &event);
       if (event.type == YAML_DOCUMENT_START_EVENT) {
-        tmp_obj = do_parse_for_stream(&parser);
+        tmp_obj = do_parse(&parser);
         if (tmp_obj) {
           rb_ary_push(obj, tmp_obj);
         }
