@@ -54,5 +54,18 @@ describe YAML::LibYAML do
         YAML::LibYAML.load(input).should == expect
       end
     end
+    
+    {
+      ':symbol'          => :symbol,
+      ':123'             => :"123",
+      ':test of symbols' => :"test of symbols",
+      ':@attribute'      => :"@attribute",
+      ':@@cattr'         => :"@@cattr",
+      ':$variable'       => :'$variable',
+    }.each do |str, expected|
+      it "should interpret '#{str}' as a symbol" do
+        YAML::LibYAML.load(str).should == expected
+      end
+    end
   end
 end

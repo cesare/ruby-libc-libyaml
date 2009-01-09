@@ -115,6 +115,21 @@ static VALUE get_fixnum_by_regexp(VALUE rstring) {
   return Qundef;
 }
 
+static VALUE get_symbol(VALUE rstring) {
+  const char* pattern = "^:.+$";
+  const VALUE regexp = rb_reg_new(pattern, strlen(pattern), 0);
+  const char* str;
+  
+  if (rb_reg_match(regexp, rstring) == Qnil) {
+    return Qundef;
+  }
+  
+  str = RSTRING_PTR(rstring);
+  str++; /* length of rstring is determined more than 2 bytes, as it matches regexp above */
+  
+  return ID2SYM(rb_intern(str));
+}
+
 static VALUE construct_scalar_node(yaml_document_t* document, yaml_node_t* node) {
   VALUE value;
   const char* str;
@@ -133,6 +148,10 @@ static VALUE construct_scalar_node(yaml_document_t* document, yaml_node_t* node)
   }
   
   rstring = rb_str_new2(str);
+  value = get_symbol(rstring);
+  if (value != Qundef) {
+    return value;
+  }
   
   value = get_fixnum_by_regexp(rstring);
   if (value != Qundef) {
