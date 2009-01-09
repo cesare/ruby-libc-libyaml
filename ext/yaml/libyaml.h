@@ -1,12 +1,4 @@
 /*
- * Utility macros
- */
-
-#define RAISE_WITH_PARSER_INITIALIZE_FAILED \
-  rb_sys_fail("Failed to initialize parser instance with yaml_parser_initialize()")
-
-
-/*
  * constants
  */
 #ifndef FALSE
@@ -16,21 +8,44 @@
 # define TRUE (~FALSE)
 #endif
 
+typedef int BOOL;
+
+
+/*
+ * data types
+ */
+
+typedef enum {
+  STRING,
+  STREAM
+} InputSourceType;
+
+typedef struct  {
+  yaml_parser_t* parser;
+  
+  InputSourceType source_type;
+  
+  union {
+    struct {
+      const unsigned char* str;
+      size_t length;
+    } string; /* TODO choose another name */
+
+    struct {
+      FILE* io;
+      BOOL close_on_exit;
+    } stream;
+    
+  } source;
+  
+  BOOL parse_all_documents;
+  
+} ParsingContext;
+
 
 /*
  * function prototypes
  */
-FILE* get_iostream(VALUE io);
-VALUE ary_last(VALUE ary);
 
-VALUE get_fixed_value_by_name(yaml_event_t* event);
-
-VALUE do_parse(yaml_parser_t *p_parser);
-VALUE do_parse_for_stream(yaml_parser_t *p_parser);
-
-VALUE rb_libyaml_load(VALUE self, VALUE rstr);
-VALUE rb_libyaml_load_file(VALUE self, VALUE file_str);
-VALUE rb_libyaml_load_stream(VALUE self, VALUE rstr);
-VALUE rb_libyaml_dump(VALUE self, VALUE robj, VALUE io);
-
+VALUE construct_node(yaml_document_t* document, yaml_node_t* node);
 

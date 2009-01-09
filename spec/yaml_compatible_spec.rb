@@ -54,14 +54,14 @@ global:
   - bar
   - baz
 
-### TODO: anchor ( hmm, fail also in YAML. )
+### TODO: anchor
 ---
 my_config1: &anchor1
  - foo
  - bar
  - baz
 
- my_config2: *anchor1
+my_config2: *anchor1
 
 # from yaml spec exmaple, see also http://yaml.org/spec/1.1/
 ### TODO: Example 2.19. integers
