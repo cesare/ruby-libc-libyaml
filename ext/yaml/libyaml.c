@@ -2,7 +2,6 @@
 #include <rubyio.h>
 
 #include <yaml.h>
-#include <assert.h>
 
 #include "libyaml.h"
 

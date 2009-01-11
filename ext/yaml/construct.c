@@ -1,6 +1,4 @@
 #include <ruby.h>
-#include <rubyio.h>
-#include <assert.h>
 #include <yaml.h>
 
 #include "libyaml.h"
