@@ -212,9 +212,3 @@ VALUE construct_node(yaml_document_t* document, yaml_node_t* node) {
   }
   return Qnil;
 }
-
-VALUE construct_document(yaml_document_t* document, yaml_node_t* root) {
-  VALUE results;
-  results = construct_node(document, root);
-  return results;
-}
