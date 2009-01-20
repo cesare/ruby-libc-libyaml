@@ -88,15 +88,6 @@ static VALUE get_fixed_value_by_name(const char* str) {
 }
 
 static VALUE get_fixnum_by_regexp(VALUE rstring) {
-  const char* oct_reg_char = "^0[0-7]+$";
-  const VALUE oct_regex = rb_reg_new(oct_reg_char, strlen(oct_reg_char), 0);
-  
-  const char* hex_reg_char = "^0x[0-9a-fA-F]+";
-  const VALUE hex_regex = rb_reg_new(hex_reg_char, strlen(hex_reg_char), 0);
-
-  const char* num_reg_char = "^(\\+|-)?([0-9][0-9\\._]*)$";
-  const VALUE num_regex = rb_reg_new(num_reg_char, strlen(num_reg_char), 0);
-
   if ( rb_reg_match(rb_const_get(mLibYAML, rb_intern("OCT_REGEX")), rstring) != Qnil ) {
     return rb_str_to_inum(rstring, 8, Qfalse);
   }
