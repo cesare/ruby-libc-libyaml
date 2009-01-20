@@ -1,3 +1,5 @@
+#include "global.h";
+
 /*
  * constants
  */
@@ -9,7 +11,6 @@
 #endif
 
 typedef int BOOL;
-
 
 /*
  * data types

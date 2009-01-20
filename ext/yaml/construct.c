@@ -97,15 +97,15 @@ static VALUE get_fixnum_by_regexp(VALUE rstring) {
   const char* num_reg_char = "^(\\+|-)?([0-9][0-9\\._]*)$";
   const VALUE num_regex = rb_reg_new(num_reg_char, strlen(num_reg_char), 0);
 
-  if ( rb_reg_match(oct_regex, rstring) != Qnil ) {
+  if ( rb_reg_match(rb_const_get(mLibYAML, rb_intern("OCT_REGEX")), rstring) != Qnil ) {
     return rb_str_to_inum(rstring, 8, Qfalse);
   }
   
-  if ( rb_reg_match(hex_regex, rstring) != Qnil ) {
+  if ( rb_reg_match(rb_const_get(mLibYAML, rb_intern("HEX_REGEX")), rstring) != Qnil ) {
     return rb_str_to_inum(rstring, 16, Qfalse);
   }
   
-  if ( rb_reg_match(num_regex, rstring) != Qnil ) {
+  if ( rb_reg_match(rb_const_get(mLibYAML, rb_intern("NUM_REGEX")), rstring) != Qnil ) {
     const char* str = RSTRING_PTR(rstring);
     return (strchr(str, '.') == NULL) ? rb_str_to_inum(rstring, 10, Qfalse) : rb_Float(rstring);
   }

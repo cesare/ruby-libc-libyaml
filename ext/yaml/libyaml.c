@@ -3,6 +3,7 @@
 
 #include <yaml.h>
 
+#define GLOBAL_DEFINE
 #include "libyaml.h"
 
 #define NOT_IMPLEMENTED rb_raise(rb_eNotImpError, "not implemented!!");
@@ -19,17 +20,26 @@ static VALUE loader_alloc(VALUE clazz);
 
 static FILE* get_iostream(VALUE io);
 
-
 static VALUE mYAML;
-static VALUE mLibYAML;
+
 static VALUE cLoader;
 static VALUE cStream;
 
-
 void Init_libyaml()
 {
+
   mYAML = rb_define_module("YAML");
   mLibYAML = rb_define_module_under(mYAML, "LibYAML");
+
+  const char* oct_reg_char = "^0[0-7]+$";
+  rb_define_const(mLibYAML, "OCT_REGEX", rb_reg_new(oct_reg_char, strlen(oct_reg_char), 0));
+  
+  const char* hex_reg_char = "^0x[0-9a-fA-F]+";
+  rb_define_const(mLibYAML, "HEX_REGEX", rb_reg_new(hex_reg_char, strlen(hex_reg_char), 0));
+
+  const char* num_reg_char = "^(\\+|-)?([0-9][0-9\\._]*)$";
+  rb_define_const(mLibYAML, "NUM_REGEX", rb_reg_new(num_reg_char, strlen(num_reg_char), 0));
+ 
   rb_define_singleton_method(mLibYAML, "load", rb_libyaml_load, 1);
   rb_define_singleton_method(mLibYAML, "load_file", rb_libyaml_load_file, 1);
   rb_define_singleton_method(mLibYAML, "load_stream", rb_libyaml_load_stream, 1);
