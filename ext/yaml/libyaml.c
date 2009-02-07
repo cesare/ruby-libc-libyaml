@@ -37,7 +37,7 @@ void Init_libyaml()
   const char* hex_reg_char = "^0x[0-9a-fA-F]+";
   rb_define_const(mLibYAML, "HEX_REGEX", rb_reg_new(hex_reg_char, strlen(hex_reg_char), 0));
 
-  const char* num_reg_char = "^(\\+|-)?([0-9][0-9\\._]*)$";
+  const char* num_reg_char = "^(\\+|-)?([0-9][0-9\\._]*)([eE][\\+-]\\d+)?$";
   rb_define_const(mLibYAML, "NUM_REGEX", rb_reg_new(num_reg_char, strlen(num_reg_char), 0));
  
   rb_define_singleton_method(mLibYAML, "load", rb_libyaml_load, 1);
