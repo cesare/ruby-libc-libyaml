@@ -49,6 +49,9 @@ describe YAML::LibYAML do
       '+1' =>  1,
       '-1' => -1,
       '0'  =>  0,
+      '1e2' => 100.0,
+      '1e+2' => 100.0,
+      '1e-2' => 0.01,
     }.each do |input,expect|
       it "should interpret '#{input}' as #{expect}" do
         YAML::LibYAML.load(input).should == expect

@@ -98,7 +98,7 @@ static VALUE get_fixnum_by_regexp(VALUE rstring) {
   
   if ( rb_reg_match(rb_const_get(mLibYAML, rb_intern("NUM_REGEX")), rstring) != Qnil ) {
     const char* str = RSTRING_PTR(rstring);
-    return (strchr(str, '.') == NULL) ? rb_str_to_inum(rstring, 10, Qfalse) : rb_Float(rstring);
+    return (strchr(str, '.') == NULL && strchr(str, 'e') == NULL && strchr(str, 'E') == NULL ) ? rb_str_to_inum(rstring, 10, Qfalse) : rb_Float(rstring);
   }
   
   return Qundef;
