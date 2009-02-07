@@ -53,7 +53,7 @@ global:
   - bar
   - baz
 
-### TODO: anchor
+### anchor
 ---
 my_config1: &anchor1
  - foo
@@ -80,7 +80,7 @@ fixed: 1_230.15
 negative infinity: -.inf
 not a number: .NaN
 
-### TODO: Example 2.21 Miscelleneous
+### Example 2.21 Miscelleneous
 ---
 null: ~
 true: boolean
