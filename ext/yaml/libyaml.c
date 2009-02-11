@@ -243,6 +243,9 @@ static VALUE rb_libyaml_dump(VALUE self, VALUE robj, VALUE io) {
   yaml_emitter_t emitter;
   yaml_event_t event_stream_start;
   yaml_event_t event_stream_end;
+  yaml_event_t event_document_start;
+  yaml_event_t event_document_end;
+  yaml_event_t event_scalar;
   VALUE rstr_yaml;
 
   rstr_yaml = rb_str_new2("");
@@ -253,7 +256,23 @@ static VALUE rb_libyaml_dump(VALUE self, VALUE robj, VALUE io) {
   yaml_stream_start_event_initialize(&event_stream_start, YAML_UTF8_ENCODING);
   yaml_emitter_emit(&emitter, &event_stream_start);
 
-  /* TODO: not implemented!! */
+  /* FIXME: too ugly and there are many bugs. */
+  switch ( TYPE(robj) ) {
+    case T_STRING:
+      yaml_document_start_event_initialize(&event_document_start, NULL, NULL, NULL, 0);
+      yaml_emitter_emit(&emitter, &event_document_start);
+
+      yaml_scalar_event_initialize(&event_scalar, NULL, ( yaml_char_t * )"str", (unsigned char *)RSTRING_PTR(robj), RSTRING_LEN(robj), 1, 1, YAML_PLAIN_SCALAR_STYLE);
+      yaml_emitter_emit(&emitter, &event_scalar) ||
+        printf("emitt error: %s, error: %s", RSTRING_PTR(robj), emitter.problem);
+
+      yaml_document_end_event_initialize(&event_document_end, 1);
+      yaml_emitter_emit(&emitter, &event_document_end);
+
+      break;
+    default:
+      break;
+  }
 
   yaml_stream_end_event_initialize(&event_stream_end);
   yaml_emitter_emit(&emitter, &event_stream_end);

@@ -64,7 +64,11 @@ describe YAML::LibYAML do
 
   describe '#dump' do
     it 'should dump string as scalar' do
-      YAML::LibYAML.dump('').should == ''
+      YAML::LibYAML.dump('').should == "--- \n...\n"
+    end
+
+    it 'should dump string as scalar' do
+      YAML::LibYAML.dump('abc').should == "--- abc\n...\n"
     end
   end
 end
