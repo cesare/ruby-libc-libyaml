@@ -6,8 +6,6 @@
 #define GLOBAL_DEFINE
 #include "libyaml.h"
 
-#define NOT_IMPLEMENTED rb_raise(rb_eNotImpError, "not implemented!!");
-
 /*
  * prototypes of internal functions and methods
  */
@@ -147,8 +145,6 @@ static VALUE load_documents(VALUE loader) {
 }
 
 
-
-
 static VALUE rb_libyaml_load(VALUE self, VALUE rstr) {
   VALUE loader;
   ParsingContext* context;
@@ -237,9 +233,34 @@ static VALUE rb_libyaml_load_stream(VALUE self, VALUE obj) {
   return rb_ensure(load_documents, loader, destroy_context, loader);
 }
 
+static int append_dumper_output(VALUE data, unsigned char * buffer, unsigned int size) {
+  rb_str_append(data, rb_str_new(buffer, size));
+
+  return 0;
+}
+
 static VALUE rb_libyaml_dump(VALUE self, VALUE robj, VALUE io) {
-  NOT_IMPLEMENTED /* TODO */
-  return robj;
+  yaml_emitter_t emitter;
+  yaml_event_t event_stream_start;
+  yaml_event_t event_stream_end;
+  VALUE rstr_yaml;
+
+  rstr_yaml = rb_str_new2("");
+
+  yaml_emitter_initialize(&emitter);
+  yaml_emitter_set_output(&emitter, (yaml_write_handler_t *)&append_dumper_output, rstr_yaml);
+
+  yaml_stream_start_event_initialize(&event_stream_start, YAML_UTF8_ENCODING);
+  yaml_emitter_emit(&emitter, &event_stream_start);
+
+  /* TODO: not implemented!! */
+
+  yaml_stream_end_event_initialize(&event_stream_end);
+  yaml_emitter_emit(&emitter, &event_stream_end);
+  
+  yaml_emitter_delete(&emitter);
+
+  return rstr_yaml;
 }
 
 

@@ -61,4 +61,10 @@ describe YAML::LibYAML do
       open(get_pathname('minimum-valid-example.yaml')) { |io| YAML::LibYAML.load(io) }.should == 123
     end
   end
+
+  describe '#dump' do
+    it 'should dump string as scalar' do
+      YAML::LibYAML.dump('').should == ''
+    end
+  end
 end
