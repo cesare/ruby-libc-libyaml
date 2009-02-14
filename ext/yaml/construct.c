@@ -1,4 +1,9 @@
 #include <ruby.h>
+
+#ifdef RUBY_RUBY_H
+# include <ruby/encoding.h>
+#endif
+
 #include <yaml.h>
 
 #include "libyaml.h"
@@ -122,11 +127,13 @@ static VALUE get_symbol(VALUE rstring) {
 static VALUE construct_scalar_node(yaml_document_t* document, yaml_node_t* node) {
   VALUE value;
   const char* str;
+  size_t length;
   VALUE rstring = Qundef;
   yaml_scalar_style_t style = node->data.scalar.style;
   
   str = (const char*)(node->data.scalar.value);
-
+  length = node->data.scalar.length;
+  
   if (style == YAML_SINGLE_QUOTED_SCALAR_STYLE || style == YAML_DOUBLE_QUOTED_SCALAR_STYLE) {
     goto DEFAULT;
   }
@@ -135,8 +142,14 @@ static VALUE construct_scalar_node(yaml_document_t* document, yaml_node_t* node)
   if (value != Qundef) {
     return value;
   }
-  
+
+#ifdef RUBY_ENCODING_H
+  /* TODO set encoding properly */
+  rstring = rb_enc_str_new(str, length, rb_enc_find("UTF-8"));
+#else  
   rstring = rb_str_new2(str);
+#endif
+
   value = get_symbol(rstring);
   if (value != Qundef) {
     return value;
@@ -149,7 +162,11 @@ static VALUE construct_scalar_node(yaml_document_t* document, yaml_node_t* node)
   
   DEFAULT:
   if (rstring == Qundef) {
+#ifdef RUBY_ENCODING_H
+    rstring = rb_enc_str_new(str, length, rb_enc_find("UTF-8"));
+#else
     rstring = rb_str_new2(str);
+#endif
   }
   return rstring;
 }
