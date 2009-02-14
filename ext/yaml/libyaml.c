@@ -1,5 +1,10 @@
 #include <ruby.h>
-#include <rubyio.h>
+
+#ifdef RUBY_RUBY_H
+# include <ruby/io.h>
+#else
+# include <rubyio.h>
+#endif
 
 #include <yaml.h>
 
@@ -245,8 +250,12 @@ static VALUE rb_libyaml_dump(VALUE self, VALUE robj, VALUE io) {
 
 static FILE* get_iostream(VALUE io) {
   struct RFile* rfile;
+#ifdef HAVE_RB_IO_T
+  rb_io_t* open_file;
+#else
   OpenFile* open_file;
-  
+#endif
+
   rfile = RFILE(io);
   if (rfile == NULL) {
     return NULL;
@@ -257,5 +266,9 @@ static FILE* get_iostream(VALUE io) {
     return NULL;
   }
   
+#ifdef HAVE_RB_IO_T
+  return rb_io_stdio_file(open_file);
+#else
   return GetReadFile(open_file);
+#endif
 }
