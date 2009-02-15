@@ -64,11 +64,44 @@ describe YAML::LibYAML do
 
   describe '#dump' do
     it 'should dump string as scalar' do
-      YAML::LibYAML.dump('').should == "--- \n...\n"
+      input = ''
+      result = YAML::LibYAML.dump(input)
+      result.should == "--- \n...\n"
+      YAML::LibYAML.load(result).should == input
     end
 
     it 'should dump string as scalar' do
-      YAML::LibYAML.dump('abc').should == "--- abc\n...\n"
+      input = 'abc'
+      result = YAML::LibYAML.dump(input)
+      result.should == "--- abc\n...\n"
+      YAML::LibYAML.load(result).should == input
+    end
+
+    it 'should dump array as mapping' do
+      input = %w[ foo bar baz ]
+      result = YAML::LibYAML.dump(input)
+      result.should == <<-END_OF_MAPPING
+---
+- foo
+- bar
+- baz
+      END_OF_MAPPING
+      YAML::LibYAML.load(result).should == input
+    end
+
+    it 'should dump nested array as mapping' do
+      input = [ %w[ foo bar baz ], %w[ bar baz foo ] ]
+      result = YAML::LibYAML.dump(input)
+      result.should == <<-END_OF_MAPPING
+---
+- - foo
+  - bar
+  - baz
+- - bar
+  - baz
+  - foo
+      END_OF_MAPPING
+      YAML::LibYAML.load(result).should == input
     end
   end
 end
