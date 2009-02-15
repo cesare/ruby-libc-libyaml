@@ -50,3 +50,5 @@ typedef struct  {
 
 VALUE construct_node(yaml_document_t* document, yaml_node_t* node);
 
+VALUE wrap_rb_utf8_str_new(const char* str, long length);
+

@@ -46,7 +46,7 @@ static const float NOT_A_NUMBER      =  (0.0 / 0.0);
 
 #define is_valid_as(s,a) is_valid_string_as((s), (a), (sizeof((a)) / sizeof(const char*)))
 
-static VALUE wrap_rb_utf8_str_new(const char* str, long length) {
+VALUE wrap_rb_utf8_str_new(const char* str, long length) {
 #ifdef RUBY_ENCODING_H
   /* TODO set encoding properly */
   return rb_enc_str_new(str, length, rb_enc_find("UTF-8"));

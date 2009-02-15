@@ -239,7 +239,7 @@ static VALUE rb_libyaml_load_stream(VALUE self, VALUE obj) {
 }
 
 static int append_dumper_output(VALUE data, unsigned char * buffer, unsigned int size) {
-  rb_str_append(data, rb_str_new(buffer, size));
+  rb_str_append(data, wrap_rb_utf8_str_new(buffer, size));
 
   return 0;
 }
@@ -292,9 +292,10 @@ static VALUE rb_libyaml_dump(VALUE self, VALUE robj, VALUE io) {
   yaml_event_t event_stream_end;
   VALUE rstr_yaml;
 
-  rstr_yaml = rb_str_new2("");
+  rstr_yaml = wrap_rb_utf8_str_new("", 0);
 
   yaml_emitter_initialize(&emitter);
+  yaml_emitter_set_unicode(&emitter, 1);
   yaml_emitter_set_output(&emitter, (yaml_write_handler_t *)&append_dumper_output, rstr_yaml);
 
   yaml_stream_start_event_initialize(&event_stream_start, YAML_UTF8_ENCODING);

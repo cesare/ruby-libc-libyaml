@@ -77,6 +77,13 @@ describe YAML::LibYAML do
       YAML::LibYAML.load(result).should == input
     end
 
+    it 'should dump multibyte string as scalar' do
+      input = 'あいうえお'
+      result = YAML::LibYAML.dump(input)
+      result.should == "--- あいうえお\n...\n"
+      YAML::LibYAML.load(result).should == input
+    end
+
     it 'should dump array as mapping' do
       input = %w[ foo bar baz ]
       result = YAML::LibYAML.dump(input)
