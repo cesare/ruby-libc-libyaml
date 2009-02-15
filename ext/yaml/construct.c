@@ -8,7 +8,6 @@
 
 #include "libyaml.h"
 
-
 static const char* VALID_NULL_STRINGS[] = {
   "~",
   "null",
@@ -47,6 +46,14 @@ static const float NOT_A_NUMBER      =  (0.0 / 0.0);
 
 #define is_valid_as(s,a) is_valid_string_as((s), (a), (sizeof((a)) / sizeof(const char*)))
 
+static VALUE wrap_rb_utf8_str_new(const char* str, long length) {
+#ifdef RUBY_ENCODING_H
+  /* TODO set encoding properly */
+  return rb_enc_str_new(str, length, rb_enc_find("UTF-8"));
+#else
+  return rb_str_new(str, length);
+#endif
+}
 
 static VALUE is_valid_string_as(const char* str, const char** pattern, int length) {
   int i;
@@ -143,12 +150,7 @@ static VALUE construct_scalar_node(yaml_document_t* document, yaml_node_t* node)
     return value;
   }
 
-#ifdef RUBY_ENCODING_H
-  /* TODO set encoding properly */
-  rstring = rb_enc_str_new(str, length, rb_enc_find("UTF-8"));
-#else  
-  rstring = rb_str_new2(str);
-#endif
+  rstring = wrap_rb_utf8_str_new(str, length);
 
   value = get_symbol(rstring);
   if (value != Qundef) {
@@ -162,11 +164,7 @@ static VALUE construct_scalar_node(yaml_document_t* document, yaml_node_t* node)
   
   DEFAULT:
   if (rstring == Qundef) {
-#ifdef RUBY_ENCODING_H
-    rstring = rb_enc_str_new(str, length, rb_enc_find("UTF-8"));
-#else
-    rstring = rb_str_new2(str);
-#endif
+    rstring = wrap_rb_utf8_str_new(str, length);
   }
   return rstring;
 }
