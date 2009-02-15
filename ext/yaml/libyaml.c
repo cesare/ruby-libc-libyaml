@@ -252,10 +252,9 @@ static void emit_document(yaml_emitter_t * emitter, VALUE robj) {
   yaml_document_start_event_initialize(&event_document_start, NULL, NULL, NULL, 0);
   yaml_emitter_emit(emitter, &event_document_start);
 
-  yaml_scalar_event_initialize(&event_scalar, NULL, ( yaml_char_t * )"str", (unsigned char *)RSTRING_PTR(robj), RSTRING_LEN(robj), 1, 1, YAML_PLAIN_SCALAR_STYLE);
-
   switch ( TYPE(robj) ) {
     case T_STRING:
+      yaml_scalar_event_initialize(&event_scalar, NULL, ( yaml_char_t * )"str", (unsigned char *)RSTRING_PTR(robj), RSTRING_LEN(robj), 1, 1, YAML_PLAIN_SCALAR_STYLE);
       yaml_emitter_emit(emitter, &event_scalar) ||
         printf("emitt error: %s, error: %s", RSTRING_PTR(robj), (*emitter).problem);
 
