@@ -250,6 +250,13 @@ static void emit_obj(yaml_emitter_t *emitter, VALUE robj) {
   long i;
 
   switch ( TYPE(robj) ) {
+    case T_NIL:
+      yaml_scalar_event_initialize(&event_scalar, NULL, ( yaml_char_t * )"str", "~", 1, 1, 1, YAML_PLAIN_SCALAR_STYLE);
+      yaml_emitter_emit(emitter, &event_scalar) ||
+        printf("emitt error: %s, error: %s\n", "nil", (*emitter).problem);
+
+      break;
+
     case T_STRING:
       yaml_scalar_event_initialize(&event_scalar, NULL, ( yaml_char_t * )"str", (unsigned char *)RSTRING_PTR(robj), RSTRING_LEN(robj), 1, 1, YAML_PLAIN_SCALAR_STYLE);
       yaml_emitter_emit(emitter, &event_scalar) ||

@@ -63,6 +63,13 @@ describe YAML::LibYAML do
   end
 
   describe '#dump' do
+    it 'should dump nil as undef' do
+      input = nil
+      result = YAML::LibYAML.dump(input)
+      result.should == "--- ~\n...\n"
+      YAML::LibYAML.load(result).should == input
+    end
+
     it 'should dump string as scalar' do
       input = ''
       result = YAML::LibYAML.dump(input)
