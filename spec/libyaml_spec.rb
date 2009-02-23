@@ -77,6 +77,13 @@ describe YAML::LibYAML do
       YAML::LibYAML.load(result).should == input
     end
 
+    it 'should dump "~" as scalar' do
+      input = '~'
+      result = YAML::LibYAML.dump(input)
+      result.should == %{--- "~"\n}
+      YAML::LibYAML.load(result).should == input
+    end
+
     it 'should dump string as scalar' do
       input = 'abc'
       result = YAML::LibYAML.dump(input)

@@ -247,6 +247,8 @@ static int append_dumper_output(VALUE data, unsigned char * buffer, unsigned int
 static void emit_obj(yaml_emitter_t *emitter, VALUE robj) {
   yaml_event_t event_scalar;
   yaml_event_t event_sequence_start, event_sequence_end;
+  yaml_scalar_style_t str_style;
+
   long i;
 
   switch ( TYPE(robj) ) {
@@ -258,7 +260,12 @@ static void emit_obj(yaml_emitter_t *emitter, VALUE robj) {
       break;
 
     case T_STRING:
-      yaml_scalar_event_initialize(&event_scalar, NULL, ( yaml_char_t * )"str", (unsigned char *)RSTRING_PTR(robj), RSTRING_LEN(robj), 1, 1, YAML_PLAIN_SCALAR_STYLE);
+      if ( strcmp(RSTRING_PTR(robj), "~") == 0 ) {
+        str_style = YAML_DOUBLE_QUOTED_SCALAR_STYLE;
+      } else {
+        str_style = YAML_PLAIN_SCALAR_STYLE;
+      }
+      yaml_scalar_event_initialize(&event_scalar, NULL, ( yaml_char_t * )"str", (unsigned char *)RSTRING_PTR(robj), RSTRING_LEN(robj), 1, 1, str_style);
       yaml_emitter_emit(emitter, &event_scalar) ||
         printf("emitt error: %s, error: %s\n", RSTRING_PTR(robj), (*emitter).problem);
 
