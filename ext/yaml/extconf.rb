@@ -33,4 +33,4 @@ unless find_library('yaml', 'yaml_parser_initialize', *LIB_DIRS)
   abort "libyaml is missing."
 end
 
-create_makefile('yaml/libyaml')
+create_makefile('yaml/native')
