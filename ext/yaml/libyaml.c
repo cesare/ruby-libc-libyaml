@@ -28,7 +28,7 @@ static VALUE mYAML;
 static VALUE cLoader;
 static VALUE cStream;
 
-void Init_libyaml()
+void Init_native()
 {
 
   mYAML = rb_define_module("YAML");

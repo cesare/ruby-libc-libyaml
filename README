@@ -1,0 +1,30 @@
+libyaml binding for ruby.
+
+== Example
+
+  require 'yaml/libyaml'
+  
+  yobj = YAML::LibYAML.load_file('example.yaml')
+  YAML::LibYAML.dump(yobj) #=> yaml format string
+
+NOTE: This library is early development. So API may change in future.
+
+== Description
+
+== Build & Testing
+
+rake spec
+
+If you want to test on ruby 1.9, please use ruby with -S option.
+   ruby19 -S rake spec
+
+== SEE ALSO
+- YAML: http://yaml.org/
+- libyaml: http://pyyaml.org/wiki/LibYAML
+- compare yaml library features between Perl, Ruby, Python, Java: http://gihyo.jp/dev/serial/01/yaml_library ( Japanease Only )
+
+== Contact
+
+IRC: #ruby-libc-libyaml@freenode
+ML: http://groups.google.co.jp/group/ruby-libc-libyaml
+

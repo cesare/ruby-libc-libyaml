@@ -25,7 +25,7 @@ spec = Gem::Specification.new do |s|
   s.summary          = 'Ruby binding module of libyaml library'
   s.homepage         = 'http://groups.google.co.jp/group/ruby-libc-libyaml'
 
-  files = FileList["{doc,ext,lib,spec}/**/*"].exclude("doc/rdoc").exclude('**/*.{bundle,o,so}').to_a
+  files = FileList["{doc,ext,lib,spec}/**/*"].exclude("doc/rdoc").exclude('**/*.{bundle,o,so,log}').to_a
   files |= ['Rakefile', 'LICENSE']
   s.files            = files
   s.extensions       = ['ext/yaml/extconf.rb']
