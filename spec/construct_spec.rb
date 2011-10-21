@@ -9,7 +9,7 @@ describe YAML::LibYAML do
         YAML::LibYAML.load(str).should be_nan
       end
     end
-    
+
     ['.inf', '.Inf', '.INF', '+.inf', '+.Inf', '+.INF'].each do |str|
       it "should interpret '#{str}' as positive infinity" do
         YAML::LibYAML.load(str).should be_infinite
@@ -21,19 +21,19 @@ describe YAML::LibYAML do
         YAML::LibYAML.load(str).infinite?.should == -1
       end
     end
-    
+
     ['~', 'null', 'Null', 'NULL'].each do |str|
       it "should interpret '#{str}' as nil" do
         YAML::LibYAML.load(str).should be_nil
       end
     end
-    
+
     ['true', 'True', 'TRUE'].each do |str|
       it "should interpret '#{str}' as true" do
         YAML::LibYAML.load(str).should be_true
       end
     end
-    
+
     ['false', 'False', 'FALSE'].each do |str|
       it "should interpret '#{str}' as false" do
         YAML::LibYAML.load(str).should be_false
@@ -57,7 +57,7 @@ describe YAML::LibYAML do
         YAML::LibYAML.load(input).should == expect
       end
     end
-    
+
     {
       ':symbol'          => :symbol,
       ':123'             => :"123",

@@ -3,7 +3,7 @@ libyaml binding for ruby.
 == Example
 
   require 'yaml/libyaml'
-  
+
   yobj = YAML::LibYAML.load_file('example.yaml')
   YAML::LibYAML.dump(yobj) #=> yaml format string
 

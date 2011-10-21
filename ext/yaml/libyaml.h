@@ -23,9 +23,9 @@ typedef enum {
 
 typedef struct  {
   yaml_parser_t* parser;
-  
+
   InputSourceType source_type;
-  
+
   union {
     struct {
       const unsigned char* str;
@@ -36,11 +36,11 @@ typedef struct  {
       FILE* io;
       BOOL close_on_exit;
     } stream;
-    
+
   } source;
-  
+
   BOOL parse_all_documents;
-  
+
 } ParsingContext;
 
 
