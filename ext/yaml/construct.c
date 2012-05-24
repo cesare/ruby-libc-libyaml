@@ -57,45 +57,45 @@ static VALUE wrap_rb_utf8_str_new(const char* str, long length) {
 
 static VALUE is_valid_string_as(const char* str, const char** pattern, int length) {
   int i;
-  
+
   for (i = 0; i < length; i++) {
     if (strcmp(str, pattern[i]) == 0) {
       return Qtrue;
     }
   }
-  
+
   return Qfalse;
 }
 
 static VALUE get_fixed_value_by_name(const char* str) {
   const char* ptr  = NULL;
   const char* head = NULL;
-  
+
   if (str == NULL) {
     return Qundef;
   }
-  
+
   if (is_valid_as(str, VALID_NULL_STRINGS)) {
     return Qnil;
   }
   if (is_valid_as(str, VALID_TRUE_STRINGS)) {
     return Qtrue;
   }
-  
+
   if (is_valid_as(str, VALID_FALSE_STRINGS)) {
     return Qfalse;
   }
-  
+
   if (is_valid_as(str, VALID_NAN_STRINGS)) {
     return rb_float_new(NOT_A_NUMBER);
   }
-  
+
   head = str;
   ptr = (*head == '+' || *head == '-') ? head + 1 : head;
   if (is_valid_as(ptr, VALID_INFINITY_STRINGS)) {
     return rb_float_new(*head == '-' ? NEGATIVE_INFINITY : POSITIVE_INFINITY);
   }
-  
+
   return Qundef;
 }
 
@@ -103,16 +103,16 @@ static VALUE get_fixnum_by_regexp(VALUE rstring) {
   if ( rb_reg_match(rb_const_get(mLibYAML, rb_intern("OCT_REGEX")), rstring) != Qnil ) {
     return rb_str_to_inum(rstring, 8, Qfalse);
   }
-  
+
   if ( rb_reg_match(rb_const_get(mLibYAML, rb_intern("HEX_REGEX")), rstring) != Qnil ) {
     return rb_str_to_inum(rstring, 16, Qfalse);
   }
-  
+
   if ( rb_reg_match(rb_const_get(mLibYAML, rb_intern("NUM_REGEX")), rstring) != Qnil ) {
     const char* str = RSTRING_PTR(rstring);
     return (strchr(str, '.') == NULL && strchr(str, 'e') == NULL && strchr(str, 'E') == NULL ) ? rb_str_to_inum(rstring, 10, Qfalse) : rb_Float(rstring);
   }
-  
+
   return Qundef;
 }
 
@@ -120,14 +120,14 @@ static VALUE get_symbol(VALUE rstring) {
   const char* pattern = "^:.+$";
   const VALUE regexp = rb_reg_new(pattern, strlen(pattern), 0);
   const char* str;
-  
+
   if (rb_reg_match(regexp, rstring) == Qnil) {
     return Qundef;
   }
-  
+
   str = RSTRING_PTR(rstring);
   str++; /* length of rstring is determined more than 2 bytes, as it matches regexp above */
-  
+
   return ID2SYM(rb_intern(str));
 }
 
@@ -137,14 +137,14 @@ static VALUE construct_scalar_node(yaml_document_t* document, yaml_node_t* node)
   size_t length;
   VALUE rstring = Qundef;
   yaml_scalar_style_t style = node->data.scalar.style;
-  
+
   str = (const char*)(node->data.scalar.value);
   length = node->data.scalar.length;
-  
+
   if (style == YAML_SINGLE_QUOTED_SCALAR_STYLE || style == YAML_DOUBLE_QUOTED_SCALAR_STYLE) {
     goto DEFAULT;
   }
-  
+
   value = get_fixed_value_by_name(str);
   if (value != Qundef) {
     return value;
@@ -156,12 +156,12 @@ static VALUE construct_scalar_node(yaml_document_t* document, yaml_node_t* node)
   if (value != Qundef) {
     return value;
   }
-  
+
   value = get_fixnum_by_regexp(rstring);
   if (value != Qundef) {
     return value;
   }
-  
+
   DEFAULT:
   if (rstring == Qundef) {
     rstring = wrap_rb_utf8_str_new(str, length);
@@ -175,7 +175,7 @@ static VALUE construct_sequence_node(yaml_document_t* document, yaml_node_t* nod
   yaml_node_item_t* item;
   VALUE results;
   int i;
-  
+
   results = rb_ary_new2(top - start);
   i = 0;
   for (item = start; item < top; item++) {
@@ -183,7 +183,7 @@ static VALUE construct_sequence_node(yaml_document_t* document, yaml_node_t* nod
     rb_ary_store(results, i, elements);
     i++;
   }
-  
+
   return results;
 }
 
@@ -192,14 +192,14 @@ static VALUE construct_mapping_node(yaml_document_t* document, yaml_node_t* node
   yaml_node_pair_t* top   = node->data.mapping.pairs.top;
   yaml_node_pair_t* pair;
   VALUE results;
-  
+
   results = rb_hash_new();
   for (pair = start; pair < top; pair++) {
     VALUE key   = construct_node(document, yaml_document_get_node(document, pair->key));
     VALUE value = construct_node(document, yaml_document_get_node(document, pair->value));
     rb_hash_aset(results, key, value);
   }
-  
+
   return results;
 }
 

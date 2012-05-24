@@ -4,7 +4,7 @@ module YAML
       MAJOR = 0
       MINOR = 0
       TINY  = 1
-    
+
       class << self
         def to_version
           [ MAJOR, MINOR, TINY ].join('.')

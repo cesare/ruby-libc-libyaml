@@ -7,9 +7,9 @@
 require File.join(File.dirname(__FILE__), 'spec_helper')
 
 describe YAML::LibYAML do
-  
+
   NON_STRING_OBJECTS = [ nil, 1, 1.23, :filename, ['filename'], {:filename => 'minimum-valid-example.yaml'} ]
-  
+
   #
   # Examples which cause some kind of exceptions, while calling YAML::LibYAML.load_file()
   #
@@ -19,7 +19,7 @@ describe YAML::LibYAML do
         lambda { YAML::LibYAML.load_file(1) }.should raise_error(TypeError)
       end
     end
-    
+
     it 'should raise exception if specified file does not exist' do
       lambda { YAML::LibYAML.load_file('no-such-file.yaml') }.should raise_error(Errno::ENOENT)
     end
@@ -35,7 +35,7 @@ describe YAML::LibYAML do
       results.should == 123
     end
   end
-  
+
 
   #
   # Examples which cause some kind of exceptions, while calling YAML::LibYAML.load()
@@ -47,7 +47,7 @@ describe YAML::LibYAML do
       end
     end
   end
-  
+
   #
   # These are minimum examples, just to check if #load can parse valid YAML expressions.
   # See construct_spec.rb for parsing and construction details.
@@ -56,7 +56,7 @@ describe YAML::LibYAML do
     it 'should parse strings passed as an argument, into Ruby objects' do
       YAML::LibYAML.load('123').should == 123
     end
-    
+
     it 'should read stream and parse its contents into Ruby objects' do
       open(get_pathname('minimum-valid-example.yaml')) { |io| YAML::LibYAML.load(io) }.should == 123
     end
